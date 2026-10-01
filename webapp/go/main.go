@@ -910,7 +910,15 @@ func getTrend(c echo.Context) error {
 // トレンドのレスポンス（全ユーザー共通）。trendLoop が定期的に作り直す
 var trendCache atomic.Value
 
-const trendInterval = 500 * time.Millisecond
+// 作り直す間隔。閲覧者がトレンドの変化を見る頻度（=ユーザーの増え方）に効くので環境変数で振れるようにする
+var trendInterval = time.Duration(envInt("TREND_INTERVAL_MS", 500)) * time.Millisecond
+
+func envInt(key string, def int) int {
+	if v, err := strconv.Atoi(os.Getenv(key)); err == nil {
+		return v
+	}
+	return def
+}
 
 func trendLoop() {
 	for {
