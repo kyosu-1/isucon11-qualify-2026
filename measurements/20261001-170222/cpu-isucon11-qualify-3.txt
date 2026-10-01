@@ -1,0 +1,8 @@
+COMMAND                   AVG_CPU%
+nginx                          4.3
+pidstat                        0.3
+vmstat                         0.0
+rcu_sched                      0.0
+multipathd                     0.0
+jbd2/nvme0n1p1-                0.0
+dbus-daemon                    0.0
