@@ -1,0 +1,8 @@
+timestamp : 20261001-170853
+commit    : 859af73  experiment: trend 間隔 10000ms（HTTP/1.1 化でベンチ機に余裕が出たので、ユーザーを少し増やす方向を再確認）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : trend 間隔 10000ms（h1 + 21件/時）
+dirty     : 0 files uncommitted (webapp/ etc/)

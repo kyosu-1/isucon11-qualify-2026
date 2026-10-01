@@ -1,0 +1,6 @@
+COMMAND                   AVG_CPU%
+nginx                          4.4
+pidstat                        0.3
+systemd-logind                 0.0
+systemd                        0.0
+ksoftirqd/1                    0.0
