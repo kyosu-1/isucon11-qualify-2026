@@ -1,0 +1,8 @@
+timestamp : 20261001-164003
+commit    : 72d9c8e  perf: 3 台構成にする（isu1: nginx+app / isu2: MariaDB / isu3: ISU のコンディション受信用 nginx → isu1 の app）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : 3 台構成（DB→isu2 / コンディション TLS→isu3）
+dirty     : 0 files uncommitted (webapp/ etc/)
