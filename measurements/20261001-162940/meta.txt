@@ -1,0 +1,8 @@
+timestamp : 20261001-162940
+commit    : 3c06f12  perf: isu_condition の主キーを (uuid, timestamp) にし、レベル絞り込み・LIMIT・日付範囲を SQL に寄せる / isu 一覧の N+1 解消
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-1
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : PK(uuid,timestamp) + SQL で絞り込み
+dirty     : 0 files uncommitted (webapp/ etc/)

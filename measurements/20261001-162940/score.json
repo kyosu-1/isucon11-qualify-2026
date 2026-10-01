@@ -1,0 +1,40 @@
+{
+ "score": 20485,
+ "pass": true,
+ "raw": 20546,
+ "deduction": 61,
+ "error_count": 0,
+ "timeout_count": 612,
+ "user_added": 10,
+ "user_not_added": 0,
+ "breakdown": {
+  "StartBenchmark": 1,
+  "GraphGood": 0,
+  "GraphNormal": 0,
+  "GraphBad": 0,
+  "GraphWorst": 461,
+  "TodayGraphGood": 0,
+  "TodayGraphNormal": 0,
+  "TodayGraphBad": 0,
+  "TodayGraphWorst": 565,
+  "ReadInfoCondition": 451,
+  "ReadWarningCondition": 436,
+  "ReadCriticalCondition": 42,
+  "IsuInitialize": 140,
+  "NormalUserInitialize": 26,
+  "ViewerInitialize": 90,
+  "ViewerDropout": 0,
+  "RepairIsu": 316,
+  "PostInfoCondition": 6696,
+  "PostWarningCondition": 11851,
+  "PostCriticalCondition": 8908,
+  "ViewerLoop": 29447
+ },
+ "breakdown_short": "G 0/0/0/461 T 0/0/0/565 R 451/436/42 user 26 viewer 90-0 isu 140 post 6696/11851/8908",
+ "errors": [
+  {
+   "count": 1,
+   "msg": "タイムアウト数が多いため、サービスの評判が悪くなりました。以降ユーザーは増加しません"
+  }
+ ]
+}

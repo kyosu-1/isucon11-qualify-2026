@@ -1,0 +1,6 @@
+COMMAND                   AVG_CPU%
+pidstat                        0.3
+isucondition                   0.1
+vmstat                         0.0
+mysqld                         0.0
+irqbalance                     0.0
