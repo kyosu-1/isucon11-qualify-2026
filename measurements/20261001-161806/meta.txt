@@ -1,0 +1,8 @@
+timestamp : 20261001-161806
+commit    : 4d6ca38  bench: 2874 ベースライン1 + parse.py（ベンチ出力の全指標を拾う）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-1
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : ベースライン2（ノイズ幅）
+dirty     : 0 files uncommitted (webapp/ etc/)
