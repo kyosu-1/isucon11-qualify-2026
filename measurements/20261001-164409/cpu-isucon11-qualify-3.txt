@@ -1,0 +1,11 @@
+COMMAND                   AVG_CPU%
+nginx                         16.9
+pidstat                        0.3
+vmstat                         0.0
+systemd-journal                0.0
+rcu_sched                      0.0
+multipathd                     0.0
+kworker/u4:2-ext4-rsv-conversion       0.0
+kworker/0:1-events             0.0
+ksoftirqd/1                    0.0
+ksoftirqd/0                    0.0
