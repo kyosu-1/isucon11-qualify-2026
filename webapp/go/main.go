@@ -713,120 +713,87 @@ func getIsuGraph(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, "bad format: datetime")
 	}
-	date := time.Unix(datetimeInt64, 0).Truncate(time.Hour)
+	date := datetimeInt64 - datetimeInt64%3600
 
-	if isu := getIsu(jiaIsuUUID); isu == nil || isu.UserID != jiaUserID {
+	isu := getIsu(jiaIsuUUID)
+	if isu == nil || isu.UserID != jiaUserID {
 		return c.String(http.StatusNotFound, "not found: isu")
 	}
 
-	res, err := generateIsuGraphResponse(jiaIsuUUID, date)
-	if err != nil {
-		c.Logger().Error(err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+	res := generateIsuGraphResponse(isu, date)
 
 	return c.JSON(http.StatusOK, res)
 }
 
-// グラフのデータ点を一日分生成
-func generateIsuGraphResponse(jiaIsuUUID string, graphDate time.Time) ([]GraphResponse, error) {
-	conditions := []IsuCondition{}
-	err := db.Select(&conditions,
-		"SELECT `timestamp`, `is_sitting`, `condition` FROM `isu_condition`"+
-			" WHERE `jia_isu_uuid` = ? AND `timestamp` >= ? AND `timestamp` < ? ORDER BY `timestamp` ASC",
-		jiaIsuUUID, graphDate, graphDate.Add(24*time.Hour))
-	if err != nil {
-		return nil, fmt.Errorf("db error: %v", err)
-	}
-
+// グラフのデータ点を一日分生成（メモリ上のコンディションから。graphDate は 1 時間単位に切り捨てた unix 秒）
+func generateIsuGraphResponse(isu *isuInfo, graphDate int64) []GraphResponse {
 	responseList := make([]GraphResponse, 0, 24)
-	idx := 0
-	for h := 0; h < 24; h++ {
-		start := graphDate.Add(time.Duration(h) * time.Hour)
-		end := start.Add(time.Hour)
+
+	isu.condMu.RLock()
+	defer isu.condMu.RUnlock()
+	conds := isu.conds
+	idx := sort.Search(len(conds), func(k int) bool { return conds[k].ts >= graphDate })
+	for h := int64(0); h < 24; h++ {
+		start := graphDate + h*3600
+		end := start + 3600
 		from := idx
-		for idx < len(conditions) && conditions[idx].Timestamp.Before(end) {
+		for idx < len(conds) && conds[idx].ts < end {
 			idx++
 		}
 		var data *GraphDataPoint
-		timestamps := []int64{}
+		timestamps := make([]int64, 0, idx-from)
 		if idx > from {
-			d, err := calculateGraphDataPoint(conditions[from:idx])
-			if err != nil {
-				return nil, err
-			}
+			d := calculateGraphDataPoint(conds[from:idx])
 			data = &d
-			for _, cond := range conditions[from:idx] {
-				timestamps = append(timestamps, cond.Timestamp.Unix())
+			for _, c := range conds[from:idx] {
+				timestamps = append(timestamps, c.ts)
 			}
 		}
 		responseList = append(responseList, GraphResponse{
-			StartAt:             start.Unix(),
-			EndAt:               end.Unix(),
+			StartAt:             start,
+			EndAt:               end,
 			Data:                data,
 			ConditionTimestamps: timestamps,
 		})
 	}
-
-	return responseList, nil
+	return responseList
 }
 
 // 複数のISUのコンディションからグラフの一つのデータ点を計算
-func calculateGraphDataPoint(isuConditions []IsuCondition) (GraphDataPoint, error) {
-	conditionsCount := map[string]int{"is_broken": 0, "is_dirty": 0, "is_overweight": 0}
-	rawScore := 0
-	for _, condition := range isuConditions {
-		badConditionsCount := 0
-
-		if !isValidConditionFormat(condition.Condition) {
-			return GraphDataPoint{}, fmt.Errorf("invalid condition format")
-		}
-
-		for _, condStr := range strings.Split(condition.Condition, ",") {
-			keyValue := strings.Split(condStr, "=")
-
-			conditionName := keyValue[0]
-			if keyValue[1] == "true" {
-				conditionsCount[conditionName] += 1
-				badConditionsCount++
-			}
-		}
-
-		if badConditionsCount >= 3 {
+func calculateGraphDataPoint(isuConditions []cond) GraphDataPoint {
+	rawScore, sittingCount, broken, dirty, overweight := 0, 0, 0, 0, 0
+	for _, c := range isuConditions {
+		switch flagBadCount[c.flags] {
+		case 3:
 			rawScore += scoreConditionLevelCritical
-		} else if badConditionsCount >= 1 {
-			rawScore += scoreConditionLevelWarning
-		} else {
+		case 0:
 			rawScore += scoreConditionLevelInfo
+		default:
+			rawScore += scoreConditionLevelWarning
 		}
-	}
-
-	sittingCount := 0
-	for _, condition := range isuConditions {
-		if condition.IsSitting {
+		if c.flags&flagBroken != 0 {
+			broken++
+		}
+		if c.flags&flagDirty != 0 {
+			dirty++
+		}
+		if c.flags&flagOverweight != 0 {
+			overweight++
+		}
+		if c.sitting {
 			sittingCount++
 		}
 	}
-
-	isuConditionsLength := len(isuConditions)
-
-	score := rawScore * 100 / 3 / isuConditionsLength
-
-	sittingPercentage := sittingCount * 100 / isuConditionsLength
-	isBrokenPercentage := conditionsCount["is_broken"] * 100 / isuConditionsLength
-	isOverweightPercentage := conditionsCount["is_overweight"] * 100 / isuConditionsLength
-	isDirtyPercentage := conditionsCount["is_dirty"] * 100 / isuConditionsLength
-
-	dataPoint := GraphDataPoint{
-		Score: score,
+	n := len(isuConditions)
+	return GraphDataPoint{
+		Score: rawScore * 100 / 3 / n,
 		Percentage: ConditionsPercentage{
-			Sitting:      sittingPercentage,
-			IsBroken:     isBrokenPercentage,
-			IsOverweight: isOverweightPercentage,
-			IsDirty:      isDirtyPercentage,
+			Sitting:      sittingCount * 100 / n,
+			IsBroken:     broken * 100 / n,
+			IsOverweight: overweight * 100 / n,
+			IsDirty:      dirty * 100 / n,
 		},
 	}
-	return dataPoint, nil
 }
 
 // GET /api/condition/:jia_isu_uuid
@@ -851,7 +818,7 @@ func getIsuConditions(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusBadRequest, "bad format: end_time")
 	}
-	endTime := time.Unix(endTimeInt64, 0)
+	endTime := endTimeInt64
 	conditionLevelCSV := c.QueryParam("condition_level")
 	if conditionLevelCSV == "" {
 		return c.String(http.StatusBadRequest, "missing: condition_level")
@@ -862,83 +829,48 @@ func getIsuConditions(c echo.Context) error {
 	}
 
 	startTimeStr := c.QueryParam("start_time")
-	var startTime time.Time
+	startTime := int64(-1 << 62)
 	if startTimeStr != "" {
-		startTimeInt64, err := strconv.ParseInt(startTimeStr, 10, 64)
+		startTime, err = strconv.ParseInt(startTimeStr, 10, 64)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "bad format: start_time")
 		}
-		startTime = time.Unix(startTimeInt64, 0)
 	}
 
 	isu := getIsu(jiaIsuUUID)
 	if isu == nil || isu.UserID != jiaUserID {
 		return c.String(http.StatusNotFound, "not found: isu")
 	}
-	isuName := isu.Name
+	var levelOK [4]bool // "=true" の数ごとに返すかどうか
+	_, levelOK[0] = conditionLevel[conditionLevelInfo]
+	_, levelOK[1] = conditionLevel[conditionLevelWarning]
+	levelOK[2] = levelOK[1]
+	_, levelOK[3] = conditionLevel[conditionLevelCritical]
 
-	conditionsResponse, err := getIsuConditionsFromDB(db, jiaIsuUUID, endTime, conditionLevel, startTime, conditionLimit, isuName)
-	if err != nil {
-		c.Logger().Errorf("db error: %v", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-	return c.JSON(http.StatusOK, conditionsResponse)
-}
-
-// ISUのコンディションをDBから取得
-func getIsuConditionsFromDB(db *sqlx.DB, jiaIsuUUID string, endTime time.Time, conditionLevel map[string]interface{}, startTime time.Time,
-	limit int, isuName string) ([]*GetIsuConditionResponse, error) {
-
-	// condition_level 列: "=true" の数（0: info / 1,2: warning / 3: critical）
-	levels := []string{}
-	if _, ok := conditionLevel[conditionLevelInfo]; ok {
-		levels = append(levels, "0")
-	}
-	if _, ok := conditionLevel[conditionLevelWarning]; ok {
-		levels = append(levels, "1", "2")
-	}
-	if _, ok := conditionLevel[conditionLevelCritical]; ok {
-		levels = append(levels, "3")
-	}
-	conditionsResponse := []*GetIsuConditionResponse{}
-	if len(levels) == 0 {
-		return conditionsResponse, nil
-	}
-
-	query := "SELECT `timestamp`, `is_sitting`, `condition`, `message` FROM `isu_condition` WHERE `jia_isu_uuid` = ? AND `timestamp` < ?"
-	args := []interface{}{jiaIsuUUID, endTime}
-	if !startTime.IsZero() {
-		query += " AND ? <= `timestamp`"
-		args = append(args, startTime)
-	}
-	if len(levels) < 4 {
-		query += " AND `condition_level` IN (" + strings.Join(levels, ",") + ")"
-	}
-	query += " ORDER BY `timestamp` DESC LIMIT ?"
-	args = append(args, limit)
-
-	conditions := []IsuCondition{}
-	if err := db.Select(&conditions, query, args...); err != nil {
-		return nil, fmt.Errorf("db error: %v", err)
-	}
-
-	for _, c := range conditions {
-		cLevel, err := calculateConditionLevel(c.Condition)
-		if err != nil {
+	// メモリ上のコンディションを新しい順に最大 conditionLimit 件
+	conditionsResponse := make([]GetIsuConditionResponse, 0, conditionLimit)
+	isu.condMu.RLock()
+	conds := isu.conds
+	for i := sort.Search(len(conds), func(k int) bool { return conds[k].ts >= endTime }) - 1; i >= 0 && len(conditionsResponse) < conditionLimit; i-- {
+		cd := &conds[i]
+		if cd.ts < startTime {
+			break
+		}
+		if !levelOK[flagBadCount[cd.flags]] {
 			continue
 		}
-		conditionsResponse = append(conditionsResponse, &GetIsuConditionResponse{
-			JIAIsuUUID:     jiaIsuUUID,
-			IsuName:        isuName,
-			Timestamp:      c.Timestamp.Unix(),
-			IsSitting:      c.IsSitting,
-			Condition:      c.Condition,
-			ConditionLevel: cLevel,
-			Message:        c.Message,
+		conditionsResponse = append(conditionsResponse, GetIsuConditionResponse{
+			JIAIsuUUID:     isu.UUID,
+			IsuName:        isu.Name,
+			Timestamp:      cd.ts,
+			IsSitting:      cd.sitting,
+			Condition:      conditionStrings[cd.flags],
+			ConditionLevel: flagLevels[cd.flags],
+			Message:        cd.msg,
 		})
 	}
-
-	return conditionsResponse, nil
+	isu.condMu.RUnlock()
+	return c.JSON(http.StatusOK, conditionsResponse)
 }
 
 // ISUのコンディションの文字列からコンディションレベルを計算
@@ -1058,22 +990,26 @@ func postIsuCondition(c echo.Context) error {
 	}
 
 	rows := make([]condRow, 0, len(req))
-	var newest *PostIsuConditionRequest
+	conds := make([]cond, 0, len(req))
+	newest := 0
 	for i := range req {
-		cond := &req[i]
-		if !isValidConditionFormat(cond.Condition) {
+		r := &req[i]
+		flags, ok := parseCondition(r.Condition)
+		if !ok {
 			return c.String(http.StatusBadRequest, "bad request body")
 		}
-		rows = append(rows, condRow{UUID: jiaIsuUUID, Timestamp: time.Unix(cond.Timestamp, 0), IsSitting: cond.IsSitting, Condition: cond.Condition, Message: cond.Message})
-		if newest == nil || cond.Timestamp > newest.Timestamp {
-			newest = cond
+		rows = append(rows, condRow{UUID: jiaIsuUUID, Timestamp: time.Unix(r.Timestamp, 0), IsSitting: r.IsSitting, Condition: conditionStrings[flags], Message: r.Message})
+		conds = append(conds, cond{ts: r.Timestamp, sitting: r.IsSitting, flags: flags, msg: intern(r.Message)})
+		if r.Timestamp > req[newest].Timestamp {
+			newest = i
 		}
 	}
-	enqueueConditions(rows)
+	isu.addConds(conds)     // 読み出し（一覧・グラフ）はメモリから。即時に見える
+	enqueueConditions(rows) // DB へは非同期（永続化用）
 
 	// 最新コンディション（一覧・トレンド用）を更新する
-	level, _ := calculateConditionLevel(newest.Condition)
-	nl := &latestCond{Timestamp: newest.Timestamp, IsSitting: newest.IsSitting, Condition: newest.Condition, Message: newest.Message, Level: level}
+	n := conds[newest]
+	nl := &latestCond{Timestamp: n.ts, IsSitting: n.sitting, Condition: conditionStrings[n.flags], Message: n.msg, Level: flagLevels[n.flags]}
 	for {
 		old := isu.latest.Load()
 		if old != nil && old.Timestamp >= nl.Timestamp {
