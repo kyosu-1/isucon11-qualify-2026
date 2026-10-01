@@ -8,7 +8,7 @@ SHELL := /bin/bash
 #   BENCH     : ベンチマーカー専用ノード（hosts.generated.mk）
 ENTRY     ?= isucon11-qualify-1
 APP_HOSTS ?= isucon11-qualify-1 isucon11-qualify-2 isucon11-qualify-3
-DB_HOST   ?= isucon11-qualify-1
+DB_HOST   ?= isucon11-qualify-2
 -include hosts.generated.mk
 export ENTRY APP_HOSTS DB_HOST BENCH ISU1_IP ISU2_IP ISU3_IP BENCH_IP
 

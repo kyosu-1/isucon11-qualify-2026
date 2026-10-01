@@ -32,3 +32,7 @@ wait
 echo "==> $BENCH : 競技用サービスを停止（ベンチ専用）"
 ssh "$BENCH" 'sudo systemctl disable --now isucondition.go jiaapi-mock nginx mariadb >/dev/null 2>&1 || true
   for s in isucondition.go jiaapi-mock nginx mariadb; do printf "  %-18s %s\n" $s "$(systemctl is-active $s)"; done'
+# DB 分離用: アプリは別ノードから isucon ユーザーで繋ぐ（AMI は localhost のみ）。全台に作っておけば DB をどこに置いてもよい
+for HOST in "${APP_HOSTS_ARR[@]}"; do
+  ssh "$HOST" "sudo mysql -e \"CREATE USER IF NOT EXISTS 'isucon'@'%' IDENTIFIED BY 'isucon'; GRANT ALL PRIVILEGES ON isucondition.* TO 'isucon'@'%'; FLUSH PRIVILEGES;\"" && echo "  [$HOST] mysql user isucon@% ok"
+done

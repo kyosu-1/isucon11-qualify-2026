@@ -9,6 +9,6 @@ ISU1_IP="${ISU1_IP:-$(mk ISU1_IP)}"; ISU2_IP="${ISU2_IP:-$(mk ISU2_IP)}"; ISU3_I
 BENCH="${BENCH:-$(mk BENCH)}"; BENCH_IP="${BENCH_IP:-$(mk BENCH_IP)}"
 PREFIX=isucon11-qualify
 ENTRY="${ENTRY:-$PREFIX-1}"
-DB_HOST="${DB_HOST:-$PREFIX-1}"
+DB_HOST="${DB_HOST:-$PREFIX-2}"
 read -r -a APP_HOSTS_ARR <<< "${APP_HOSTS:-$PREFIX-1 $PREFIX-2 $PREFIX-3}"
 APP_SVC=isucondition.go
