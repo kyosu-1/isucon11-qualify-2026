@@ -1,0 +1,8 @@
+COMMAND                   AVG_CPU%
+pidstat                        0.3
+landscape-sysin                0.1
+sshd                           0.0
+rcu_sched                      0.0
+mysqld                         0.0
+ModemManager                   0.0
+isucondition                   0.0

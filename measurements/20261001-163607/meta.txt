@@ -1,0 +1,8 @@
+timestamp : 20261001-163607
+commit    : 64aa603  perf: アイコンに Cache-Control: private, max-age を付ける
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-1
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : http2_max_requests + icon Cache-Control
+dirty     : 0 files uncommitted (webapp/ etc/)
