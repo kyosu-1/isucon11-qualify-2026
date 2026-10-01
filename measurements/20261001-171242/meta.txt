@@ -1,0 +1,8 @@
+timestamp : 20261001-171242
+commit    : 0d70941  experiment: 静的ファイルを gzip_static で返す
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : gzip_static
+dirty     : 0 files uncommitted (webapp/ etc/)
