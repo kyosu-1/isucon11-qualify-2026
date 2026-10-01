@@ -1,0 +1,9 @@
+COMMAND                   AVG_CPU%
+mysqld                        18.3
+pidstat                        0.4
+jbd2/nvme0n1p1-                0.1
+vmstat                         0.0
+rcu_sched                      0.0
+multipathd                     0.0
+kworker/u4:0-ext4-rsv-conversion       0.0
+kworker/1:1-dio/nvme0n1p1       0.0

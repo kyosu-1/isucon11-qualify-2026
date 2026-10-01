@@ -1,0 +1,10 @@
+COMMAND                   AVG_CPU%
+nginx                          4.2
+pidstat                        0.3
+systemd-journal                0.0
+rcu_sched                      0.0
+mysqld                         0.0
+kworker/u4:1-ext4-rsv-conversion       0.0
+kworker/u4:0-ext4-rsv-conversion       0.0
+kworker/0:2-events             0.0
+irqbalance                     0.0
