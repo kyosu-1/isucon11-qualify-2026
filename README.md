@@ -1,7 +1,7 @@
 # ISUCON11 予選 2026（ISUCONDITION）
 
 ISUCON11 予選（ISUCONDITION）を、レギュレーションを守った上でどこまでスコアを伸ばせるか検証するリポジトリ。
-計測 → 改善のループは Claude Code が回した。汎用のナレッジは [isucon-tools](https://github.com/Dorayaki-World/isucon-tools)。
+計測 → 改善のループは Claude Code が回した。汎用のナレッジは isucon-tools（非公開リポジトリ）にまとめている。
 
 環境: 競技サーバー c5.large × 3、ベンチ機 c4.xlarge（公式 README のインスタンスタイプどおり）。matsuu/aws-isucon の AMI を isuenv で起動。
 
