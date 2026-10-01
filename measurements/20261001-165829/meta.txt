@@ -1,0 +1,8 @@
+timestamp : 20261001-165829
+commit    : 89549f8  bench: 5088950 trend 60s + 応答 500ms 遅延
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : 同一コード 2 回目（ノイズ幅）
+dirty     : 0 files uncommitted (webapp/ etc/)
