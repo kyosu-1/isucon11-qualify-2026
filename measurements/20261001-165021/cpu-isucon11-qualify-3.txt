@@ -1,0 +1,7 @@
+COMMAND                   AVG_CPU%
+nginx                         11.1
+pidstat                        0.3
+rcu_sched                      0.0
+kworker/u4:1-ext4-rsv-conversion       0.0
+kworker/0:1-events             0.0
+ksoftirqd/0                    0.0
