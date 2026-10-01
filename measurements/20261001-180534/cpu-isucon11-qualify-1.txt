@@ -1,0 +1,13 @@
+COMMAND                   AVG_CPU%
+nginx                         30.2
+pidstat                        0.4
+rcu_sched                      0.1
+landscape-sysin                0.1
+vmstat                         0.0
+systemd-journal                0.0
+polkitd                        0.0
+mysqld                         0.0
+ksoftirqd/1                    0.0
+ksoftirqd/0                    0.0
+kcompactd0                     0.0
+dbus-daemon                    0.0

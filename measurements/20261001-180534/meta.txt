@@ -1,0 +1,8 @@
+timestamp : 20261001-180534
+commit    : d93f06a  experiment: TLS 1.2 + AES128-GCM に固定（閲覧者の trend は毎回フルハンドシェイク。ベンチ機側のハンドシェイクが軽くなるかを見る）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : TLS1.2 固定 (1)
+dirty     : 0 files uncommitted (webapp/ etc/)
