@@ -1,0 +1,8 @@
+timestamp : 20261001-165620
+commit    : 000eb5d  experiment: /api/trend の応答を 500ms 遅らせて閲覧者のリクエスト数を抑える
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : trend 60s + 応答 500ms 遅延
+dirty     : 0 files uncommitted (webapp/ etc/)

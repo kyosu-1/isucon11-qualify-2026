@@ -1,0 +1,5 @@
+COMMAND                   AVG_CPU%
+nginx                          5.6
+pidstat                        0.3
+ksoftirqd/1                    0.0
+kcompactd0                     0.0
