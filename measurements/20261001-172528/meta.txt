@@ -1,0 +1,8 @@
+timestamp : 20261001-172528
+commit    : 6a6744d  experiment: app を isu3 に移す（isu1: ユーザー向け nginx のみ / isu3: コンディション受信 nginx + app）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : app を isu3 に移す
+dirty     : 0 files uncommitted (webapp/ etc/)
