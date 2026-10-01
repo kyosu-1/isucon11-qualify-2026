@@ -1,0 +1,8 @@
+timestamp : 20261001-162007
+commit    : 7f8b741  perf: isu_condition に (jia_isu_uuid, timestamp) のインデックス
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-1
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : インデックス
+dirty     : 0 files uncommitted (webapp/ etc/)
