@@ -1,0 +1,12 @@
+COMMAND                   AVG_CPU%
+isucondition                  62.3
+nginx                          9.2
+pidstat                        0.4
+mysqld                         0.1
+ksoftirqd/1                    0.1
+ksoftirqd/0                    0.1
+vmstat                         0.0
+mysql                          0.0
+landscape-sysin                0.0
+kworker/1:0-events             0.0
+dbus-daemon                    0.0
