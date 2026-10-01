@@ -1,0 +1,8 @@
+timestamp : 20261001-171502
+commit    : a74b485  perf: isu2 の MariaDB 設定（buffer pool 2G / flush_log_at_trx_commit=2 / query cache off）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : gzip revert + MariaDB 設定
+dirty     : 0 files uncommitted (webapp/ etc/)
