@@ -1,0 +1,8 @@
+timestamp : 20261001-173527
+commit    : 5d936b6  docs: README・journal・SKILL.md を最終構成に合わせる
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : 最終確認
+dirty     : 0 files uncommitted (webapp/ etc/)
