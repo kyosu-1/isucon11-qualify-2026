@@ -1,0 +1,10 @@
+COMMAND                   AVG_CPU%
+mysqld                        17.5
+landscape-sysin                0.6
+pidstat                        0.4
+jbd2/nvme0n1p1-                0.1
+vmstat                         0.0
+systemd-journal                0.0
+kworker/u4:1-ext4-rsv-conversion       0.0
+kworker/1:14-dio/nvme0n1p1       0.0
+dbus-daemon                    0.0

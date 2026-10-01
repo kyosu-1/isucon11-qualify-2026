@@ -1,0 +1,8 @@
+timestamp : 20261001-172302
+commit    : d31cc3c  bench: 6736544 再起動試験後（3 台 reboot → サービス自動起動 → pass）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : スロークエリログ OFF（2 回目）
+dirty     : 0 files uncommitted (webapp/ etc/)
