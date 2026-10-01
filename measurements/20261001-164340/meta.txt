@@ -1,0 +1,8 @@
+timestamp : 20261001-164340
+commit    : f04592d  perf: コンディションの読み出し（GET /api/condition・graph）をメモリから返す
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : コンディション読み出しをメモリから
+dirty     : 0 files uncommitted (webapp/ etc/)

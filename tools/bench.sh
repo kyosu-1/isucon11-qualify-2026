@@ -35,7 +35,8 @@ ssh "$BENCH" "sudo pkill -x vmstat; nohup sudo sh -c 'vmstat -t 1 100 > /tmp/vms
 wait
 
 echo "==> [2/5] 疎通確認"
-code="$(ssh "$ENTRY" "curl -sk -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 1 --retry-connrefused https://127.0.0.1/api/trend" || true)"
+# アプリは起動時に DB から全コンディションを読み直すので、応答するまで待つ（最大 60 秒）
+code="$(ssh "$ENTRY" 'for i in $(seq 60); do c=$(curl -sk -o /dev/null -w "%{http_code}" https://127.0.0.1/api/trend); [ "$c" = 200 ] && break; sleep 1; done; echo $c' || true)"
 echo "    GET /api/trend -> $code"
 [ "$code" = "200" ] || { echo "!! アプリに届いていません。ベンチを中止します。" >&2; exit 1; }
 
