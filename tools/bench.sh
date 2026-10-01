@@ -35,7 +35,7 @@ ssh "$BENCH" "sudo pkill -x vmstat; nohup sudo sh -c 'vmstat -t 1 100 > /tmp/vms
 wait
 
 echo "==> [2/5] 疎通確認"
-code="$(ssh "$ENTRY" "curl -sk -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 1 --retry-all-errors https://127.0.0.1/api/trend" || true)"
+code="$(ssh "$ENTRY" "curl -sk -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 1 --retry-connrefused https://127.0.0.1/api/trend" || true)"
 echo "    GET /api/trend -> $code"
 [ "$code" = "200" ] || { echo "!! アプリに届いていません。ベンチを中止します。" >&2; exit 1; }
 
