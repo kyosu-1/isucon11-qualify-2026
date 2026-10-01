@@ -1,0 +1,4 @@
+COMMAND                   AVG_CPU%
+nginx                          5.8
+pidstat                        0.3
+vmstat                         0.0
