@@ -1,0 +1,8 @@
+timestamp : 20261001-180404
+commit    : 258bb4d  Revert "experiment: nginx を外し、isu3 の app が直接 TLS(443, HTTP/1.1) を受ける。ベンチの入口も isu3"
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : nginx 構成に戻した確認
+dirty     : 0 files uncommitted (webapp/ etc/)
