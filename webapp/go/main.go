@@ -671,6 +671,9 @@ func getIsuIcon(c echo.Context) error {
 	}
 
 	jiaIsuUUID := c.Param("jia_isu_uuid")
+	if isu := getIsu(jiaIsuUUID); isu == nil || isu.UserID != jiaUserID {
+		return c.String(http.StatusNotFound, "not found: isu")
+	}
 
 	var image []byte
 	err = db.Get(&image, "SELECT `image` FROM `isu` WHERE `jia_user_id` = ? AND `jia_isu_uuid` = ?",
@@ -684,6 +687,8 @@ func getIsuIcon(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
+	// アイコンは登録後に変わらない。ユーザーごとのキャッシュに載せて再リクエストを無くす
+	c.Response().Header().Set("Cache-Control", "private, max-age=86400")
 	return c.Blob(http.StatusOK, "", image)
 }
 
