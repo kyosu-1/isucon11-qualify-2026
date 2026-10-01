@@ -1,0 +1,8 @@
+timestamp : 20261001-162307
+commit    : 91ce31f  perf: /api/trend を 500ms ごとに 1 クエリで作り直すキャッシュにする
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-1
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : trend キャッシュ
+dirty     : 0 files uncommitted (webapp/ etc/)

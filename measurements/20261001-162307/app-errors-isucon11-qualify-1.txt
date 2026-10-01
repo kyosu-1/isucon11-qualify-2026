@@ -1,0 +1,6 @@
+      3 {"id":"","remote_ip":"127.0.0.1","host":"10.100.0.39:443","method":"GET","uri":"/api/isu/<UUID>/icon","user_agent":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safa
+      2 {"id":"","remote_ip":"127.0.0.1","host":"10.100.0.39:443","method":"GET","uri":"/api/isu/<UUID>/icon","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99
+      2 {"id":"","remote_ip":"127.0.0.1","host":"10.100.0.39:443","method":"GET","uri":"/api/isu/<UUID>/icon","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.16
+      1 {"level":"ERROR","prefix":"echo","file":"main.go","line":"630","message":"JIAService returned error: status code 404, message: Bad isu_uuid"}
+      1 {"id":"","remote_ip":"127.0.0.1","host":"10.100.0.39:443","method":"GET","uri":"/api/isu/<UUID>/icon","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Sa
+      1 {"id":"","remote_ip":"127.0.0.1","host":"10.100.0.39:443","method":"GET","uri":"/api/isu/<UUID>/icon","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12) Gecko/20100101 Firefox/79.0","status":200,"error":"write t
