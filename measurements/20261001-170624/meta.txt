@@ -1,0 +1,8 @@
+timestamp : 20261001-170624
+commit    : 0205176  experiment: コンディションを 1 ISU・1 時間あたり 21 件までに絞る
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : 1 時間 21 件に絞る
+dirty     : 0 files uncommitted (webapp/ etc/)
