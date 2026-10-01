@@ -1,0 +1,12 @@
+COMMAND                   AVG_CPU%
+nginx                         31.9
+pidstat                        0.4
+rcu_sched                      0.1
+systemd-logind                 0.0
+polkitd                        0.0
+mysqld                         0.0
+kworker/u4:1-flush-259:0       0.0
+ksoftirqd/1                    0.0
+ksoftirqd/0                    0.0
+dbus-daemon                    0.0
+curl                           0.0
