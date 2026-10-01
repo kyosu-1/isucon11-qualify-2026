@@ -83,3 +83,21 @@ ssh isucon11-qualify-2 'sudo mysql isucondition -e "select floor(unix_timestamp(
 
 nginx ログ（conn / conn_req を追加）から: ユーザー向けは 49 接続が各 1000 リクエスト以上。1 接続あたり 78 req/s = 1 往復 12.8ms、
 うちサーバー時間は 1ms 未満。**ユーザーのループはベンチ機側の処理時間で決まっている**ので、サーバーの応答時間を削っても伸びない。
+
+### 17:15〜17:35 仕上げ
+
+- isu2 の MariaDB 設定（buffer pool 2G など）。スコアには無関係（mysqld 16%）
+- `make restart-test`（3 台 reboot）: サービスは全部自動起動、6,736,544
+- スロークエリログ OFF（`make measure-off`）: 6,738,798 / 6,773,304（ON と差なし。DB はボトルネックでない）
+- nginx ログから: ユーザーの訪問は「全レベルのコンディション（平均 3.9 ページ）/ warning,critical / グラフ（当日から負荷開始日まで 1 日ずつ遡る）」が 1/3 ずつ。
+  点のほぼ全部はグラフの遡り（1 リクエスト 150 点）。閲覧者の trend は 1 リクエストごとに新しい TLS 接続
+- app を isu3 に移す（isu1 は nginx だけ）: 6,909,950 / 6,876,034。再起動試験 7,024,602
+- trend 遅延 900ms: 7,182,440 / 7,103,066（timeouts 0）
+
+### 到達点と引き継ぎ
+
+- 最終構成: isu1 nginx / isu2 MariaDB / isu3 nginx + app。約 710 万点、エラー 0
+- ベンチ機（c4.xlarge）が busy 86% で律速。サーバーは 3 台とも 16〜44%
+- 未解決: グラフの 1 割が Normal（ベンチ機の送信が遅れて 1 時間 20 件になる時間帯がある）。サーバー側からは手が無い
+- 未修正: `make explain` がバッククォートを含む SQL で壊れる。`restart-test.sh` の `NOAPPRESTART` は bench.sh 側で未実装（毎回 app を再起動する）
+- 次にやるなら: レギュレーション判断が要る 3 設定（README）を外した「保守的な構成」での最適点探し
