@@ -1,0 +1,8 @@
+timestamp : 20261001-170402
+commit    : 8881218  experiment: isu1（ユーザー向け）の HTTP/2 も切る
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : isu1 も HTTP/1.1 に
+dirty     : 0 files uncommitted (webapp/ etc/)

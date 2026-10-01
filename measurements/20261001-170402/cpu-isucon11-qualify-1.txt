@@ -1,0 +1,13 @@
+COMMAND                   AVG_CPU%
+isucondition                  63.4
+nginx                         38.9
+pidstat                        0.4
+landscape-sysin                0.2
+ksoftirqd/1                    0.1
+ksoftirqd/0                    0.1
+udisksd                        0.0
+sshd                           0.0
+rcu_sched                      0.0
+lsb_release                    0.0
+kworker/u4:1-ext4-rsv-conversion       0.0
+kworker/u4:0-ext4-rsv-conversion       0.0
