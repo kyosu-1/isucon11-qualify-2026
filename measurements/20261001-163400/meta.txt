@@ -1,0 +1,8 @@
+timestamp : 20261001-163400
+commit    : 07bfd32  perf: ISU・最新コンディション・ユーザーをメモリに持ち、コンディションは 200ms ごとにまとめて INSERT する
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-1
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : メモリキャッシュ + bulk insert（drop 0.9 のまま）
+dirty     : 0 files uncommitted (webapp/ etc/)

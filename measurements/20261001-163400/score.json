@@ -1,0 +1,56 @@
+{
+ "score": 79612,
+ "pass": true,
+ "raw": 79636,
+ "deduction": 24,
+ "error_count": 24,
+ "timeout_count": 3,
+ "user_added": 12,
+ "user_not_added": 0,
+ "breakdown": {
+  "StartBenchmark": 1,
+  "GraphGood": 0,
+  "GraphNormal": 0,
+  "GraphBad": 0,
+  "GraphWorst": 3518,
+  "TodayGraphGood": 0,
+  "TodayGraphNormal": 0,
+  "TodayGraphBad": 0,
+  "TodayGraphWorst": 2548,
+  "ReadInfoCondition": 1238,
+  "ReadWarningCondition": 1011,
+  "ReadCriticalCondition": 104,
+  "IsuInitialize": 311,
+  "NormalUserInitialize": 58,
+  "ViewerInitialize": 177,
+  "ViewerDropout": 0,
+  "RepairIsu": 1030,
+  "PostInfoCondition": 14606,
+  "PostWarningCondition": 14618,
+  "PostCriticalCondition": 2439,
+  "ViewerLoop": 30258
+ },
+ "breakdown_short": "G 0/0/0/3518 T 0/0/0/2548 R 1238/1011/104 user 58 viewer 177-0 isu 311 post 14606/14618/2439",
+ "errors": [
+  {
+   "count": 18,
+   "msg": "ERR: load: http: Get \"https://N.N.N.N:N/api/isu/<UUID>/icon\": httpN: client connection force closed via ClientConn.Close"
+  },
+  {
+   "count": 3,
+   "msg": "ERR: load: http: Get \"https://N.N.N.N:N/api/isu/<UUID>/icon\": write tcp N.N.N.N:N->N.N.N.N:N: write: broken pipe"
+  },
+  {
+   "count": 1,
+   "msg": "ERR: load: http: Get \"https://N.N.N.N:N/assets/index.NdacNb.js\": httpN: client connection force closed via ClientConn.Close"
+  },
+  {
+   "count": 1,
+   "msg": "ERR: load: http: unexpected EOF"
+  },
+  {
+   "count": 1,
+   "msg": "ERR: load: http: Get \"https://N.N.N.N:N/api/isu/<UUID>/icon\": write tcp N.N.N.N:N->N.N.N.N:N: write: connection reset by peer"
+  }
+ ]
+}

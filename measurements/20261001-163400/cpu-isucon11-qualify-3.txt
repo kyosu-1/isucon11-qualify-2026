@@ -1,0 +1,9 @@
+COMMAND                   AVG_CPU%
+pidstat                        0.3
+landscape-sysin                0.2
+isucondition                   0.1
+sshd                           0.0
+polkitd                        0.0
+mysqld                         0.0
+kworker/0:0-events             0.0
+dbus-daemon                    0.0
