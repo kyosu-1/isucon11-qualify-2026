@@ -1,0 +1,8 @@
+timestamp : 20261001-173204
+commit    : ab1513f  experiment: trend 応答遅延 900ms（閲覧者の trend は 1 リクエスト 1 TLS 接続。回数を半分に）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : trend 遅延 900ms (1)
+dirty     : 0 files uncommitted (webapp/ etc/)
