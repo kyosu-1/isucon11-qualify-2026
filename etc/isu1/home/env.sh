@@ -5,3 +5,4 @@ MYSQL_DBNAME=isucondition
 MYSQL_PASS=isucon
 POST_ISUCONDITION_TARGET_BASE_URL="https://isucondition-3.t.isucon.dev"
 TREND_INTERVAL_MS=60000
+TREND_DELAY_MS=500

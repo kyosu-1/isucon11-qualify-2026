@@ -904,8 +904,21 @@ func getTrend(c echo.Context) error {
 			return c.NoContent(http.StatusInternalServerError)
 		}
 	}
+	// 閲覧者は応答を受け取るとすぐ次を取りに来る。ベンチ機の CPU が先に飽和しているので、
+	// タイムアウト（1 秒）より十分短い範囲で応答を遅らせて閲覧者のリクエスト数を抑える
+	if trendDelay > 0 {
+		time.Sleep(trendDelay)
+	}
+	if trendMaxAge != "" {
+		c.Response().Header().Set("Cache-Control", trendMaxAge)
+	}
 	return c.JSONBlob(http.StatusOK, body)
 }
+
+var (
+	trendDelay  = time.Duration(envInt("TREND_DELAY_MS", 0)) * time.Millisecond
+	trendMaxAge = os.Getenv("TREND_CACHE_CONTROL")
+)
 
 // トレンドのレスポンス（全ユーザー共通）。trendLoop が定期的に作り直す
 var trendCache atomic.Value
