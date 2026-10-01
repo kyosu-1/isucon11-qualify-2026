@@ -11,7 +11,7 @@ if [ ! -f "$LOG" ]; then
 
 - スコア = 加点（raw）− 減点（deduction）。`pass=FAIL` のスコアは無効（エラー 100 回で fail）
 - timeout は 10 回で 1 点減点（POST /api/condition は対象外）
-- 内訳 = ベンチが吐く加点タグ別の件数（先行指標）
+- 内訳 = `G` 完成グラフ Good/Normal/Bad/Worst、`T` 当日グラフ 同、`R` コンディション既読 Info/Warning/Critical（50 件単位）、user ユーザー数、viewer 閲覧者 参加-離脱、isu 登録 ISU 数、post 受信コンディション Info/Warning/Critical
 
 | 時刻 | スコア | 前回比 | pass | raw | 減点 | err | timeout | 内訳 | 変更 | commit | 計測 | メモ |
 | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- |

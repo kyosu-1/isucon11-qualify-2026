@@ -1,0 +1,6 @@
+COMMAND                   AVG_CPU%
+pidstat                        0.3
+systemd-journal                0.0
+systemd                        0.0
+mysqld                         0.0
+dbus-daemon                    0.0
