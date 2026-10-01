@@ -1,0 +1,8 @@
+timestamp : 20261001-180221
+commit    : e58f843  experiment: nginx を外し、isu3 の app が直接 TLS(443, HTTP/1.1) を受ける。ベンチの入口も isu3
+entry     : isucon11-qualify-3 (10.100.0.64)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : app が直接 TLS（nginx なし）(2)
+dirty     : 0 files uncommitted (webapp/ etc/)
