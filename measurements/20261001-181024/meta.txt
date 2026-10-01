@@ -1,0 +1,8 @@
+timestamp : 20261001-181024
+commit    : d9bc749  docs: 追加実験（直接 TLS / TLS1.2 固定）は不採用
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-2
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : off
+note      : 再起動試験後 
+dirty     : 0 files uncommitted (webapp/ etc/)

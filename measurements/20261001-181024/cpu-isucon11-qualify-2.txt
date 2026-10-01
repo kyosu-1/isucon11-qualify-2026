@@ -1,0 +1,7 @@
+COMMAND                   AVG_CPU%
+mysqld                        18.1
+pidstat                        0.3
+jbd2/nvme0n1p1-                0.1
+udisksd                        0.0
+systemd                        0.0
+polkitd                        0.0
