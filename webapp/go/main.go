@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"crypto/tls"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -266,6 +267,24 @@ func main() {
 	}
 
 	go trendLoop()
+
+	// TLS_LISTEN があれば nginx を挟まずに app が直接 TLS（HTTP/1.1 のみ）を受ける
+	if addr := os.Getenv("TLS_LISTEN"); addr != "" {
+		cert, err := tls.LoadX509KeyPair(getEnv("TLS_CERT", "/etc/nginx/certificates/tls-cert.pem"), getEnv("TLS_KEY", "/etc/nginx/certificates/tls-key.pem"))
+		if err != nil {
+			e.Logger.Fatalf("failed to load tls cert: %v", err)
+			return
+		}
+		srv := &http.Server{
+			Addr:         addr,
+			Handler:      e,
+			TLSConfig:    &tls.Config{Certificates: []tls.Certificate{cert}},
+			TLSNextProto: map[string]func(*http.Server, *tls.Conn, http.Handler){}, // HTTP/2 を無効にする
+		}
+		go func() {
+			e.Logger.Fatal(srv.ListenAndServeTLS("", ""))
+		}()
+	}
 
 	serverPort := fmt.Sprintf(":%v", getEnv("SERVER_APP_PORT", "3000"))
 	e.Logger.Fatal(e.Start(serverPort))

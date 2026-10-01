@@ -9,6 +9,8 @@ EnvironmentFile=/home/isucon/env.sh
 User=isucon
 Group=isucon
 ExecStart=/home/isucon/webapp/go/isucondition
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+LimitNOFILE=65536
 
 Restart   = always
 Type      = simple
