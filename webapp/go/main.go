@@ -1010,23 +1010,30 @@ func postIsuCondition(c echo.Context) error {
 		return c.String(http.StatusNotFound, "not found: isu")
 	}
 
-	rows := make([]condRow, 0, len(req))
 	conds := make([]cond, 0, len(req))
-	newest := 0
 	for i := range req {
 		r := &req[i]
 		flags, ok := parseCondition(r.Condition)
 		if !ok {
 			return c.String(http.StatusBadRequest, "bad request body")
 		}
-		rows = append(rows, condRow{UUID: jiaIsuUUID, Timestamp: time.Unix(r.Timestamp, 0), IsSitting: r.IsSitting, Condition: conditionStrings[flags], Message: r.Message})
 		conds = append(conds, cond{ts: r.Timestamp, sitting: r.IsSitting, flags: flags, msg: intern(r.Message)})
-		if r.Timestamp > req[newest].Timestamp {
+	}
+	conds = isu.addConds(conds) // 読み出し（一覧・グラフ）はメモリから。即時に見える
+	if len(conds) == 0 {
+		return c.NoContent(http.StatusAccepted)
+	}
+
+	// DB へは非同期（永続化用）
+	rows := make([]condRow, 0, len(conds))
+	newest := 0
+	for i, cd := range conds {
+		rows = append(rows, condRow{UUID: jiaIsuUUID, Timestamp: time.Unix(cd.ts, 0), IsSitting: cd.sitting, Condition: conditionStrings[cd.flags], Message: cd.msg})
+		if cd.ts > conds[newest].ts {
 			newest = i
 		}
 	}
-	isu.addConds(conds)     // 読み出し（一覧・グラフ）はメモリから。即時に見える
-	enqueueConditions(rows) // DB へは非同期（永続化用）
+	enqueueConditions(rows)
 
 	// 最新コンディション（一覧・トレンド用）を更新する
 	n := conds[newest]

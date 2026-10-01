@@ -34,7 +34,16 @@ type isuInfo struct {
 
 	condMu sync.RWMutex
 	conds  []cond // timestamp 昇順・重複なし
+
+	// 1 時間（仮想時間）あたりに保存する件数の上限用。condMu で守る
+	capHour  int64
+	capCount int
 }
+
+// 1 時間あたりに保存するコンディション数の上限（0 = 無制限）。
+// グラフの Good は 1 時間 21 件以上。それを超える分は点にならない読み出し（ページ数・グラフの JSON）を増やすだけなので捨てる
+// （データ欠損はマニュアル上許容されている）
+var condPerHour = envInt("COND_PER_HOUR", 0)
 
 // メモリ上のコンディション 1 件。condition 文字列は 3 つのフラグから復元できるので持たない
 type cond struct {
@@ -109,13 +118,24 @@ func intern(s string) string {
 	return s
 }
 
-// コンディションを ISU に追加する（通常は時刻順に届くので末尾追加）
-func (i *isuInfo) addConds(cs []cond) {
+// コンディションを ISU に追加し、実際に保存したものを返す（通常は時刻順に届くので末尾追加）
+func (i *isuInfo) addConds(cs []cond) []cond {
+	kept := cs[:0]
 	i.condMu.Lock()
 	for _, c := range cs {
 		n := len(i.conds)
 		if n == 0 || i.conds[n-1].ts < c.ts {
+			if condPerHour > 0 {
+				if h := c.ts / 3600; h != i.capHour {
+					i.capHour, i.capCount = h, 0
+				}
+				if i.capCount >= condPerHour {
+					continue
+				}
+				i.capCount++
+			}
 			i.conds = append(i.conds, c)
+			kept = append(kept, c)
 			continue
 		}
 		pos := sort.Search(n, func(k int) bool { return i.conds[k].ts >= c.ts })
@@ -125,8 +145,10 @@ func (i *isuInfo) addConds(cs []cond) {
 		i.conds = append(i.conds, cond{})
 		copy(i.conds[pos+1:], i.conds[pos:])
 		i.conds[pos] = c
+		kept = append(kept, c)
 	}
 	i.condMu.Unlock()
+	return kept
 }
 
 var (
