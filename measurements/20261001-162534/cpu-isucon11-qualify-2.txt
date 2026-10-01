@@ -1,0 +1,9 @@
+COMMAND                   AVG_CPU%
+pidstat                        0.3
+isucondition                   0.1
+udisksd                        0.0
+mysqld                         0.0
+multipathd                     0.0
+landscape-sysin                0.0
+irqbalance                     0.0
+dbus-daemon                    0.0

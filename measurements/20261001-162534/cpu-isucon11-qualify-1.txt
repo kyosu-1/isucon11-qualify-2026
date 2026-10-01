@@ -1,0 +1,13 @@
+COMMAND                   AVG_CPU%
+mysqld                        66.6
+isucondition                  50.5
+nginx                         31.3
+jbd2/nvme0n1p1-                0.6
+pidstat                        0.4
+ksoftirqd/1                    0.1
+ksoftirqd/0                    0.1
+systemd                        0.0
+rcu_sched                      0.0
+ModemManager                   0.0
+kworker/u4:3-ext4-rsv-conversion       0.0
+kworker/u4:1-flush-259:0       0.0

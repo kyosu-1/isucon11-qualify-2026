@@ -1,0 +1,9 @@
+COMMAND                   AVG_CPU%
+pidstat                        0.3
+mysqld                         0.1
+isucondition                   0.1
+vmstat                         0.0
+systemd-journal                0.0
+sshd                           0.0
+multipathd                     0.0
+landscape-sysin                0.0
