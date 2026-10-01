@@ -60,6 +60,12 @@ deploy_one() {
           *)           if systemctl is-enabled --quiet \$s 2>/dev/null || systemctl is-active --quiet \$s; then sudo systemctl disable --now \$s >/dev/null 2>&1 || true; fi ;;
         esac
       done
+      # gzip_static 用: 静的ファイルの .gz を横に作る（元ファイルは触らない。冪等）
+      if systemctl is-enabled --quiet nginx 2>/dev/null; then
+        for f in /home/isucon/webapp/public/assets/*.js /home/isucon/webapp/public/assets/*.css /home/isucon/webapp/public/assets/*.svg /home/isucon/webapp/public/index.html; do
+          [ -f \$f.gz ] || sudo -u isucon sh -c \"gzip -9 -k -c \$f > \$f.gz\"
+        done
+      fi
       if [ -n '${changed_mysql:+x}' ] && systemctl is-enabled --quiet mariadb; then sudo systemctl restart mariadb; fi
       if [ -n '${changed_nginx:+x}' ] && systemctl is-enabled --quiet nginx; then
         sudo nginx -t -q || { echo '!! nginx -t 失敗（旧設定のまま動いています）'; exit 1; }
