@@ -1,0 +1,10 @@
+# isu2 は MariaDB 専用（3.6GB）。書き込みは 200ms ごとの bulk INSERT だけで、読み出しは起動時と initialize の全件ロードのみ
+[mysqld]
+innodb_buffer_pool_size = 2G
+innodb_log_file_size = 256M
+innodb_flush_method = O_DIRECT
+# 1 秒ごとに fsync（OS が落ちなければ失わない。reboot は正常停止なので全件残る）
+innodb_flush_log_at_trx_commit = 2
+query_cache_type = 0
+query_cache_size = 0
+max_connections = 300
