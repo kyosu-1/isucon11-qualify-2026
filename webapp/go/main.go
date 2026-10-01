@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -253,6 +254,8 @@ func main() {
 		return
 	}
 
+	go trendLoop()
+
 	serverPort := fmt.Sprintf(":%v", getEnv("SERVER_APP_PORT", "3000"))
 	e.Logger.Fatal(e.Start(serverPort))
 }
@@ -327,6 +330,11 @@ func postInitialize(c echo.Context) error {
 		request.JIAServiceURL,
 	)
 	if err != nil {
+		c.Logger().Errorf("db error : %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	if _, err := refreshTrend(); err != nil {
 		c.Logger().Errorf("db error : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -1077,82 +1085,93 @@ func calculateConditionLevel(condition string) (string, error) {
 // GET /api/trend
 // ISUの性格毎の最新のコンディション情報
 func getTrend(c echo.Context) error {
-	characterList := []Isu{}
-	err := db.Select(&characterList, "SELECT `character` FROM `isu` GROUP BY `character`")
-	if err != nil {
-		c.Logger().Errorf("db error: %v", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	res := []TrendResponse{}
-
-	for _, character := range characterList {
-		isuList := []Isu{}
-		err = db.Select(&isuList,
-			"SELECT * FROM `isu` WHERE `character` = ?",
-			character.Character,
-		)
+	body, ok := trendCache.Load().([]byte)
+	if !ok {
+		var err error
+		body, err = refreshTrend()
 		if err != nil {
 			c.Logger().Errorf("db error: %v", err)
 			return c.NoContent(http.StatusInternalServerError)
 		}
+	}
+	return c.JSONBlob(http.StatusOK, body)
+}
 
-		characterInfoIsuConditions := []*TrendCondition{}
-		characterWarningIsuConditions := []*TrendCondition{}
-		characterCriticalIsuConditions := []*TrendCondition{}
-		for _, isu := range isuList {
-			conditions := []IsuCondition{}
-			err = db.Select(&conditions,
-				"SELECT * FROM `isu_condition` WHERE `jia_isu_uuid` = ? ORDER BY timestamp DESC",
-				isu.JIAIsuUUID,
-			)
-			if err != nil {
-				c.Logger().Errorf("db error: %v", err)
-				return c.NoContent(http.StatusInternalServerError)
-			}
+// トレンドのレスポンス（全ユーザー共通）。trendLoop が定期的に作り直す
+var trendCache atomic.Value
 
-			if len(conditions) > 0 {
-				isuLastCondition := conditions[0]
-				conditionLevel, err := calculateConditionLevel(isuLastCondition.Condition)
-				if err != nil {
-					c.Logger().Error(err)
-					return c.NoContent(http.StatusInternalServerError)
-				}
-				trendCondition := TrendCondition{
-					ID:        isu.ID,
-					Timestamp: isuLastCondition.Timestamp.Unix(),
-				}
-				switch conditionLevel {
-				case "info":
-					characterInfoIsuConditions = append(characterInfoIsuConditions, &trendCondition)
-				case "warning":
-					characterWarningIsuConditions = append(characterWarningIsuConditions, &trendCondition)
-				case "critical":
-					characterCriticalIsuConditions = append(characterCriticalIsuConditions, &trendCondition)
-				}
-			}
+const trendInterval = 500 * time.Millisecond
 
+func trendLoop() {
+	for {
+		time.Sleep(trendInterval)
+		if _, err := refreshTrend(); err != nil {
+			log.Errorf("refreshTrend: %v", err)
 		}
+	}
+}
 
-		sort.Slice(characterInfoIsuConditions, func(i, j int) bool {
-			return characterInfoIsuConditions[i].Timestamp > characterInfoIsuConditions[j].Timestamp
-		})
-		sort.Slice(characterWarningIsuConditions, func(i, j int) bool {
-			return characterWarningIsuConditions[i].Timestamp > characterWarningIsuConditions[j].Timestamp
-		})
-		sort.Slice(characterCriticalIsuConditions, func(i, j int) bool {
-			return characterCriticalIsuConditions[i].Timestamp > characterCriticalIsuConditions[j].Timestamp
-		})
-		res = append(res,
-			TrendResponse{
-				Character: character.Character,
-				Info:      characterInfoIsuConditions,
-				Warning:   characterWarningIsuConditions,
-				Critical:  characterCriticalIsuConditions,
-			})
+func refreshTrend() ([]byte, error) {
+	body, err := buildTrend()
+	if err != nil {
+		return nil, err
+	}
+	trendCache.Store(body)
+	return body, nil
+}
+
+func buildTrend() ([]byte, error) {
+	characters := []string{}
+	err := db.Select(&characters, "SELECT `character` FROM `isu` GROUP BY `character`")
+	if err != nil {
+		return nil, err
+	}
+	rows := []struct {
+		ID        int       `db:"id"`
+		Character string    `db:"character"`
+		Timestamp time.Time `db:"timestamp"`
+		Condition string    `db:"condition"`
+	}{}
+	err = db.Select(&rows, "SELECT i.`id`, i.`character`, c.`timestamp`, c.`condition` FROM `isu` i"+
+		" JOIN `isu_condition` c ON c.`jia_isu_uuid` = i.`jia_isu_uuid`"+
+		" WHERE c.`timestamp` = (SELECT MAX(c2.`timestamp`) FROM `isu_condition` c2 WHERE c2.`jia_isu_uuid` = i.`jia_isu_uuid`)")
+	if err != nil {
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, res)
+	byCharacter := map[string]*TrendResponse{}
+	res := make([]*TrendResponse, 0, len(characters))
+	for _, ch := range characters {
+		t := &TrendResponse{Character: ch, Info: []*TrendCondition{}, Warning: []*TrendCondition{}, Critical: []*TrendCondition{}}
+		byCharacter[ch] = t
+		res = append(res, t)
+	}
+	for _, r := range rows {
+		t, ok := byCharacter[r.Character]
+		if !ok {
+			continue
+		}
+		conditionLevel, err := calculateConditionLevel(r.Condition)
+		if err != nil {
+			return nil, err
+		}
+		tc := &TrendCondition{ID: r.ID, Timestamp: r.Timestamp.Unix()}
+		switch conditionLevel {
+		case "info":
+			t.Info = append(t.Info, tc)
+		case "warning":
+			t.Warning = append(t.Warning, tc)
+		case "critical":
+			t.Critical = append(t.Critical, tc)
+		}
+	}
+	for _, t := range res {
+		for _, l := range [][]*TrendCondition{t.Info, t.Warning, t.Critical} {
+			l := l
+			sort.Slice(l, func(i, j int) bool { return l[i].Timestamp > l[j].Timestamp })
+		}
+	}
+	return json.Marshal(res)
 }
 
 // POST /api/condition/:jia_isu_uuid
