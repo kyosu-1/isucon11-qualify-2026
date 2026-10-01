@@ -1,0 +1,8 @@
+timestamp : 20261001-163751
+commit    : db31b32  perf: コンディションを捨てない（drop 率 0.9 → 0）
+entry     : isucon11-qualify-1 (10.100.0.39)
+db_host   : isucon11-qualify-1
+bench     : isucon11-qualify-4 (10.100.0.225)
+slowlog   : on
+note      : drop 0（全量保存）
+dirty     : 0 files uncommitted (webapp/ etc/)

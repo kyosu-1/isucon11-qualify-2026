@@ -1,0 +1,9 @@
+COMMAND                   AVG_CPU%
+pidstat                        0.3
+systemd-logind                 0.0
+systemd                        0.0
+sshd                           0.0
+rcu_sched                      0.0
+mysqld                         0.0
+kworker/1:0-events             0.0
+isucondition                   0.0
